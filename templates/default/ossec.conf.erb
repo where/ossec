@@ -1,9 +1,9 @@
 <ossec_config>
   <global>
-<% if @ossec['email']['enable'] -%>
+<% if @ossec['enable_email'] -%>
     <email_notification>yes</email_notification>
-    <email_to><%= @ossec['email']['address'] %></email_to>
-    <smtp_server><%= @ossec['email']['smtp'] %></smtp_server>
+    <email_to><%= @ossec['email'] %></email_to>
+    <smtp_server><%= @ossec['smtp'] %></smtp_server>
     <email_from>ossecm@<%= node['fqdn'] %></email_from>
 
 <% else -%>
@@ -33,12 +33,12 @@
 <% end -%>
   </alerts>
   
-<% if @ossec.has_key?('remote_syslog') && @ossec['remote_syslog']['enable'] -%>
+<% if @ossec['remote_syslog'] -%>
   <syslog_output>
-    <server><%= @ossec['remote_syslog']['server'] %></server>
-    <port><%= @ossec['remote_syslog']['port'] %></port>
-    <level><%= @ossec['remote_syslog']['level'] %></level>
-    <group><%= @ossec['remote_syslog']['group'] %></group>
+    <server><%= @ossec['remote_syslog_server'] %></server>
+    <port><%= @ossec['remote_syslog_port'] %></port>
+    <level><%= @ossec['remote_syslog_level'] %></level>
+    <group><%= @ossec['remote_syslog_group'] %></group>
   </syslog_output>
   
 <% end -%>
@@ -50,16 +50,16 @@
   </rules>
   
 <% end -%>
-<% if @ossec.has_key?('syscheck') && @ossec['syscheck']['enable'] -%>
+<% if @ossec['syscheck'] -%>
   <syscheck>
     <!-- Frequency that syscheck is executed - default to every 22 hours -->
-    <frequency><%= @ossec['syscheck']['frequency'] %></frequency>
+    <frequency><%= node['ossec']['syscheck_freq'] %></frequency>
     
-    <% @ossec['syscheck']['ignore'].each do |ignore| -%>
+    <% @ossec['syscheck_ignore'].each do |ignore| -%>
     <ignore><%= ignore %></ignore>
   	<% end -%>
   	
-  	<% @ossec['syscheck']['checkall'].each do |check| -%>
+  	<% @ossec['syscheck_checkall'].each do |check| -%>
     <directories check_all="yes"><%= check %></directories>
   	<% end -%>
   	
@@ -102,9 +102,9 @@
   
 <%   end -%>
 <% end -%>
-<% unless !@ossec.has_key?('logs') -%>
+<% unless !node['ossec'].has_key?('logs') -%>
   <!-- Files to monitor (localfiles) -->
-<%   @ossec['logs'].each do |log| -%>
+<%   node['ossec']['logs'].each do |log| -%>
   <localfile>
     <log_format>syslog</log_format>
     <location><%= log %></location>
